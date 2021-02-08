@@ -19,3 +19,27 @@ input[type="submit"] {
   font-weight: bold;
   padding: 0.5rem 1.5rem;
 }
+
+.weather-info {
+}
+
+.weather-info-main {
+}
+
+.weather-info-extras {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.temp-current {
+  font-size: 3rem;
+}
+
+.info-medium {
+  font-size: 2rem;
+}
+
+.info-small {
+  font-size: 1rem;
+  color: #888888;
+}
