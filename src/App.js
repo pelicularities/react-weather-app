@@ -116,17 +116,21 @@ function App() {
           </div>
         </div>
         <div className="weather-info-extras">
-          <div className="weather-info-cell">
+          <div className="weather-info-cell-left">
             <div>
               <div className="info-medium">
                 {tempConvertor(weatherData.main.temp_min)} ºC
               </div>
               <div className="info-small">minimum</div>
             </div>
-            <img className="down-arrow" alt="down" src="https://www.flaticon.com/svg/vstatic/svg/25/25415.svg?token=exp=1612769763~hmac=ccc354fb28c1e15a047f9a266a7b2f22"></img>
+            <div className="abcde">
+              <img className="icon down-arrow" alt="down" src="https://www.flaticon.com/svg/vstatic/svg/25/25415.svg?token=exp=1612769763~hmac=ccc354fb28c1e15a047f9a266a7b2f22"></img>
+            </div>
           </div>
-          <div className="weather-info-cell">
-            <img className="up-arrow" alt="up" src="https://www.flaticon.com/svg/vstatic/svg/25/25216.svg?token=exp=1612769763~hmac=a0e95f697331ab7079a9d0a394d890fe"></img>
+          <div className="weather-info-cell-right">
+            <div className ="abcde">
+              <img className="icon up-arrow" alt="up" src="https://www.flaticon.com/svg/vstatic/svg/25/25216.svg?token=exp=1612769763~hmac=a0e95f697331ab7079a9d0a394d890fe"></img>
+            </div>
             <div>
               <div className="info-medium">
                 {tempConvertor(weatherData.main.temp_max)} ºC
@@ -134,29 +138,37 @@ function App() {
               <div className="info-small">maximum</div>
             </div>
           </div>
-          <div className="weather-info-cell">
+          <div className="weather-info-cell-left">
             <div>
               <div className="info-medium">{weatherData.main.humidity} %</div>
               <div className="info-small">humidity</div>
             </div>
-            <img className= "raindrop" src="https://www.flaticon.com/svg/vstatic/svg/1163/1163648.svg?token=exp=1612768510~hmac=f6f886707af800a53dd8c355bb82c1ba" alt="raindrop"></img>
+            <div className="abcde">
+              <img className= "icon raindrop" src="https://www.flaticon.com/svg/vstatic/svg/1163/1163648.svg?token=exp=1612768510~hmac=f6f886707af800a53dd8c355bb82c1ba" alt="raindrop"></img>
+            </div>
           </div>
-          <div className="weather-info-cell">
-            <img className="rain" src="https://www.flaticon.com/svg/vstatic/svg/1163/1163728.svg?token=exp=1612769590~hmac=ab0d2ab654ab6975b45a9ec4b89a3db7" alt="rain"></img>
+          <div className="weather-info-cell-right">
+            <div className="abcde">
+              <img className="icon rain" src="https://www.flaticon.com/svg/vstatic/svg/1163/1163728.svg?token=exp=1612769590~hmac=ab0d2ab654ab6975b45a9ec4b89a3db7" alt="rain"></img>
+            </div>
             <div>
               <div className="info-medium">{getPrecipitationChance(forecastData)}</div>
               <div className="info-small">precipitation chance</div>
             </div>
           </div>
-          <div className="weather-info-cell">
+          <div className="weather-info-cell-left">
             <div>
               <div className="info-medium">{timeConverter(sunRise, weatherData.timezone)}</div>
               <div className="info-small">sunrise</div>
             </div>
-            <img className="sun-rise" src="https://www.flaticon.com/svg/vstatic/svg/1163/1163663.svg?token=exp=1612768510~hmac=62f4d719d52625d4faeafd5131f02bca" alt="sunrise"></img>
+            <div className= "abcde"> 
+              <img className="icon sun-rise" src="https://www.flaticon.com/svg/vstatic/svg/1163/1163663.svg?token=exp=1612768510~hmac=62f4d719d52625d4faeafd5131f02bca" alt="sunrise"></img>
+            </div>
           </div>
-          <div className="weather-info-cell">
-            <img className= "sun-rise" src="https://www.flaticon.com/svg/vstatic/svg/1163/1163664.svg?token=exp=1612768510~hmac=4343603837f8f1118679b6e79eb99406" alt="sunset"></img>
+          <div className="weather-info-cell-right">
+            <div className="abcde">
+            <img className= "icon sun-rise" src="https://www.flaticon.com/svg/vstatic/svg/1163/1163664.svg?token=exp=1612768510~hmac=4343603837f8f1118679b6e79eb99406" alt="sunset"></img>
+            </div>
             <div>
               <div className="info-medium">{timeConverter(sunSet, weatherData.timezone)}</div>
               <div className="info-small">sunset</div>
