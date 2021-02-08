@@ -3,16 +3,23 @@ import React, { useState, useEffect } from "react";
 
 function App() {
   const [weatherData, setWeatherData] = useState({
-    main: { temp: "300" },
+    main: {},
     sys: {},
   });
 
+  const [forecastData, setForecastData] = useState({ list: [{}] });
+
   const baseUrl = "http://api.openweathermap.org/data/2.5/";
   const endpoint = "weather";
+  const endpointForecast = "forecast";
   const [city, setCity] = useState("Singapore");
 
   const [queryUrl, setQueryUrl] = useState(
     `${baseUrl}${endpoint}?q=${city}&appid=${process.env.REACT_APP_OWM_API_KEY}`
+  );
+
+  const [forecastUrl, setForecastUrl] = useState(
+    `${baseUrl}${endpointForecast}?q=${city}&appid=${process.env.REACT_APP_OWM_API_KEY}`
   );
 
   useEffect(() => {
@@ -23,12 +30,23 @@ function App() {
         console.log(weatherData);
       })
       .catch((err) => console.log(err));
-  }, [queryUrl]);
+
+    fetch(forecastUrl)
+      .then((response) => response.json())
+      .then((json) => {
+        setForecastData(json);
+        console.log(forecastData.list[0]);
+      })
+      .catch((err) => console.log(err));
+  }, [queryUrl, forecastUrl]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
     setQueryUrl(
       `${baseUrl}${endpoint}?q=${city}&appid=${process.env.REACT_APP_OWM_API_KEY}`
+    );
+    setForecastUrl(
+      `${baseUrl}${endpointForecast}?q=${city}&appid=${process.env.REACT_APP_OWM_API_KEY}`
     );
   };
 
@@ -55,6 +73,21 @@ function App() {
     const ampm = hours24 < 12 ? "AM" : "PM";
 
     return `${hours12}:${minutesPadded} ${ampm}`;
+  };
+
+  const getPrecipitationChance = (forecastData) => {
+    try {
+      if (forecastData.list[0].pop) {
+        return `${Math.round(forecastData.list[0].pop * 100)}%`;
+      } else {
+        // no percentage of precipitation returned by API
+        // i.e. no chance of precipitation in next 3 hours
+        return "0%";
+      }
+    } catch (err) {
+      console.log(err);
+      return "N/A";
+    }
   };
 
   return (
@@ -93,7 +126,9 @@ function App() {
             <div className="info-small">humidity</div>
           </div>
           <div className="weather-info-cell">
-            <div className="info-medium">60%</div>
+            <div className="info-medium">
+              {getPrecipitationChance(forecastData)}
+            </div>
             <div className="info-small">precipitation chance</div>
           </div>
           <div className="weather-info-cell">
