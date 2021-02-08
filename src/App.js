@@ -39,12 +39,17 @@ function App() {
   const sunRise = new Date(weatherData.sys.sunrise * 1000);
   const sunSet = new Date(weatherData.sys.sunset * 1000);
 
-  const timeConverter = (date) => {
+  const timeConverter = (date, offset) => {
     // takes date object
     // returns string in format hh:mm AM/PM
+    // offset is in seconds, and may not be
+    // an integer number of hours
 
-    const hours24 = date.getHours();
-    const minutes = date.getMinutes();
+    const offsetMilliseconds = offset * 1000;
+    const localDate = new Date(date.getTime() + offsetMilliseconds);
+
+    const hours24 = localDate.getUTCHours();
+    const minutes = localDate.getUTCMinutes();
     const minutesPadded = minutes < 9 ? `0${minutes}` : minutes;
     const hours12 = hours24 % 12;
     const ampm = hours24 < 12 ? "AM" : "PM";
@@ -92,11 +97,15 @@ function App() {
             <div className="info-small">precipitation chance</div>
           </div>
           <div className="weather-info-cell">
-            <div className="info-medium">{timeConverter(sunRise)}</div>
+            <div className="info-medium">
+              {timeConverter(sunRise, weatherData.timezone)}
+            </div>
             <div className="info-small">sunrise</div>
           </div>
           <div className="weather-info-cell">
-            <div className="info-medium">{timeConverter(sunSet)}</div>
+            <div className="info-medium">
+              {timeConverter(sunSet, weatherData.timezone)}
+            </div>
             <div className="info-small">sunset</div>
           </div>
         </div>
