@@ -2,7 +2,7 @@ import "./App.css";
 import React, { useState, useEffect } from "react";
 
 function App() {
-  const [weatherData, setWeatherData] = useState({});
+  const [weatherData, setWeatherData] = useState({ main: { temp: "300" } });
 
   const baseUrl = "http://api.openweathermap.org/data/2.5/";
   const endpoint = "weather";
@@ -20,8 +20,6 @@ function App() {
       })
       .catch((err) => console.log(err));
   }, [queryUrl]);
-
-  console.log(weatherData);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -41,7 +39,7 @@ function App() {
         />
         <input type="submit" value="Go" onSubmit={handleSubmit} />
       </form>
-      {queryUrl}
+      <p>{weatherData.main.temp}</p>
     </div>
   );
 }
