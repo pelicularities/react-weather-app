@@ -152,7 +152,7 @@ function App() {
               <img
                 className="icon down-arrow"
                 alt="down"
-                src="https://www.flaticon.com/svg/vstatic/svg/25/25415.svg?token=exp=1612769763~hmac=ccc354fb28c1e15a047f9a266a7b2f22"
+                src={process.env.PUBLIC_URL + "/assets/thermometer-cold.svg"}
               ></img>
             </div>
           </div>
@@ -161,7 +161,7 @@ function App() {
               <img
                 className="icon up-arrow"
                 alt="up"
-                src="https://www.flaticon.com/svg/vstatic/svg/25/25216.svg?token=exp=1612769763~hmac=a0e95f697331ab7079a9d0a394d890fe"
+                src={process.env.PUBLIC_URL + "/assets/thermometer-sunny.svg"}
               ></img>
             </div>
             <div>
@@ -179,7 +179,7 @@ function App() {
             <div className="abcde">
               <img
                 className="icon raindrop"
-                src="https://www.flaticon.com/svg/vstatic/svg/1163/1163648.svg?token=exp=1612768510~hmac=f6f886707af800a53dd8c355bb82c1ba"
+                src={process.env.PUBLIC_URL + "/assets/humidity.svg"}
                 alt="raindrop"
               ></img>
             </div>
@@ -188,7 +188,7 @@ function App() {
             <div className="abcde">
               <img
                 className="icon rain"
-                src="https://www.flaticon.com/svg/vstatic/svg/1163/1163728.svg?token=exp=1612769590~hmac=ab0d2ab654ab6975b45a9ec4b89a3db7"
+                src={process.env.PUBLIC_URL + "/assets/umbrella.svg"}
                 alt="rain"
               ></img>
             </div>
@@ -209,7 +209,7 @@ function App() {
             <div className="abcde">
               <img
                 className="icon sun-rise"
-                src="https://www.flaticon.com/svg/vstatic/svg/1163/1163663.svg?token=exp=1612768510~hmac=62f4d719d52625d4faeafd5131f02bca"
+                src={process.env.PUBLIC_URL + "/assets/sunrise.svg"}
                 alt="sunrise"
               ></img>
             </div>
@@ -218,7 +218,7 @@ function App() {
             <div className="abcde">
               <img
                 className="icon sun-rise"
-                src="https://www.flaticon.com/svg/vstatic/svg/1163/1163664.svg?token=exp=1612768510~hmac=4343603837f8f1118679b6e79eb99406"
+                src={process.env.PUBLIC_URL + "/assets/sunset.svg"}
                 alt="sunset"
               ></img>
             </div>
@@ -230,6 +230,16 @@ function App() {
             </div>
           </div>
         </div>
+      </div>
+      <div>
+        Icons made by{" "}
+        <a href="https://www.freepik.com" title="Freepik">
+          Freepik
+        </a>{" "}
+        from{" "}
+        <a href="https://www.flaticon.com/" title="Flaticon">
+          www.flaticon.com
+        </a>
       </div>
     </div>
   );
