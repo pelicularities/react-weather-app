@@ -22,7 +22,7 @@ function App() {
   const baseUrl = "http://api.openweathermap.org/data/2.5/";
   const endpoint = "weather";
   const endpointForecast = "forecast";
-  const [city, setCity] = useState("Singapore");
+  const [city, setCity] = useState("London");
 
   const [queryUrl, setQueryUrl] = useState(
     `${baseUrl}${endpoint}?q=${city}&appid=${process.env.REACT_APP_OWM_API_KEY}`
@@ -60,6 +60,21 @@ function App() {
 
     return timeString;
   };
+
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition((position) => {
+        const lat = position.coords.latitude;
+        const long = position.coords.longitude;
+        setQueryUrl(
+          `${baseUrl}${endpoint}?lat=${lat}&lon=${long}&appid=${process.env.REACT_APP_OWM_API_KEY}`
+        );
+        setForecastUrl(
+          `${baseUrl}${endpointForecast}?lat=${lat}&lon=${long}&appid=${process.env.REACT_APP_OWM_API_KEY}`
+        );
+      });
+    }
+  }, []);
 
   useEffect(() => {
     fetch(queryUrl)
