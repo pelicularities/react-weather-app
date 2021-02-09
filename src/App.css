@@ -5,6 +5,10 @@
   width: 60%;
 }
 
+.d-none {
+  display: none;
+}
+
 input {
   border: 2px solid #cccccc;
   border-radius: 0.5rem;
