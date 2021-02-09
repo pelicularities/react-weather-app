@@ -39,8 +39,8 @@ function App() {
     // an integer number of hours
 
     const offsetMilliseconds = offset * 1000;
-    const localDate = new Date(date.getTime() + offsetMilliseconds);
-
+    console.log(offsetMilliseconds)
+    const localDate = offsetMilliseconds <= 0 ? new Date(date.getTime()  + offsetMilliseconds) : new Date(date.getTime()  + offsetMilliseconds - 86400000);
     const hours24 = localDate.getUTCHours();
     const minutes = localDate.getUTCMinutes();
     const minutesPadded = minutes < 9 ? `0${minutes}` : minutes;
