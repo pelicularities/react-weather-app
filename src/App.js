@@ -26,11 +26,13 @@ function App() {
   const endpointForecast = "forecast";
   const [city, setCity] = useState("London");
 
-  const [queryUrl, setQueryUrl] = useState("");
-  // `${baseUrl}${endpoint}?q=${city}&appid=${process.env.REACT_APP_OWM_API_KEY}`
+  const [queryUrl, setQueryUrl] = useState(
+    `${baseUrl}${endpoint}?q=${city}&appid=${process.env.REACT_APP_OWM_API_KEY}`
+  );
 
-  const [forecastUrl, setForecastUrl] = useState("");
-  // `${baseUrl}${endpointForecast}?q=${city}&appid=${process.env.REACT_APP_OWM_API_KEY}`
+  const [forecastUrl, setForecastUrl] = useState(
+    `${baseUrl}${endpointForecast}?q=${city}&appid=${process.env.REACT_APP_OWM_API_KEY}`
+  );
 
   const timeConverter = (date, offset, showDate = false) => {
     // takes date object
@@ -40,8 +42,11 @@ function App() {
     // for line 44, it seems that GMT 0 and GMT -ve countries's date objects are OK
     // however, GMT +ve countries's date objects need to minus 1 day's worth of milliseconds
     const offsetMilliseconds = offset * 1000;
-    console.log(offsetMilliseconds)
-    const localDate = offsetMilliseconds <= 0 ? new Date(date.getTime()  + offsetMilliseconds) : new Date(date.getTime()  + offsetMilliseconds - 86400000);
+    // console.log(offsetMilliseconds);
+    const localDate =
+      offsetMilliseconds <= 0
+        ? new Date(date.getTime() + offsetMilliseconds)
+        : new Date(date.getTime() + offsetMilliseconds - 86400000);
     const hours24 = localDate.getUTCHours();
     const minutes = localDate.getUTCMinutes();
     const minutesPadded = minutes < 9 ? `0${minutes}` : minutes;
@@ -73,7 +78,7 @@ function App() {
     );
   };
 
-  const getInitialDataUsingDefaultCity = (city) => {
+  const getInitialDataUsingDefaultCity = () => {
     setQueryUrl(
       `${baseUrl}${endpoint}?q=${city}&appid=${process.env.REACT_APP_OWM_API_KEY}`
     );
@@ -84,10 +89,10 @@ function App() {
 
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(
-      (position) => getInitialDataUsingGeolocation(position),
-      getInitialDataUsingDefaultCity(city)
+      getInitialDataUsingGeolocation,
+      getInitialDataUsingDefaultCity
     );
-  }, [city]);
+  }, []);
 
   useEffect(() => {
     const fetchQuery = fetch(queryUrl)
@@ -114,7 +119,10 @@ function App() {
   useEffect(() => {
     try {
       const iconCode = weatherData.weather[0].icon;
-      setWeatherIcon(`http://openweathermap.org/img/wn/${iconCode}@2x.png`);
+      if (!iconCode) return;
+      setWeatherIcon(
+        `${process.env.PUBLIC_URL}/assets/owm_weather_codes/${iconCode}@2x.png`
+      );
       setWeatherDescription(weatherData.weather[0].description);
       setCityLocalTime(timeConverter(new Date(), weatherData.timezone, true));
       // setIsLoading(false);
@@ -125,6 +133,7 @@ function App() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (city === "") return;
     setQueryUrl(
       `${baseUrl}${endpoint}?q=${city}&appid=${process.env.REACT_APP_OWM_API_KEY}`
     );
