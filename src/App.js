@@ -4,11 +4,12 @@ import WeatherIcon from "./components/WeatherIcon";
 import WeatherExtraInfo from "./components/WeatherExtraInfo";
 
 function App() {
+  const [units, setUnits] = useState("C");
   const [weatherData, setWeatherData] = useState({
     main: {},
     sys: {},
     weather: [{}],
-    wind : {speed: 0.00}
+    wind: { speed: 0.0 },
   });
 
   const [forecastData, setForecastData] = useState({ list: [{}] });
@@ -99,8 +100,15 @@ function App() {
     );
   };
 
-  const tempConvertor = (temp) => {
-    return (temp - 273.15).toFixed(1);
+  const tempConverter = (temp) => {
+    let convertedTemp = "";
+    if (units === "F") {
+      convertedTemp = ((temp - 273.15) * 9) / 5 + 32;
+    } else {
+      convertedTemp = temp - 273.15;
+    }
+
+    return convertedTemp.toFixed(1);
   };
 
   const currentDate = new Date();
@@ -124,6 +132,10 @@ function App() {
     }
   };
 
+  const changeUnits = (e) => {
+    setUnits(e.target.value);
+  };
+
   return (
     <div className="App">
       <form onSubmit={handleSubmit}>
@@ -132,9 +144,36 @@ function App() {
           value={city}
           onChange={(e) => setCity(e.target.value)}
           placeholder="City name"
-          aria-label = "input-box"
+          aria-label="input-box"
         />
-        <input type="submit" value="Go" onSubmit={handleSubmit} aria-label="go-button"/>
+        <input
+          type="submit"
+          value="Go"
+          onSubmit={handleSubmit}
+          aria-label="go-button"
+        />
+        <label htmlFor="C">
+          <input
+            type="radio"
+            id="C"
+            name="units"
+            value="C"
+            onChange={changeUnits}
+            checked={units === "C"}
+          />
+          ºC
+        </label>
+        <label htmlFor="F">
+          <input
+            type="radio"
+            id="F"
+            name="units"
+            value="F"
+            onChange={changeUnits}
+            checked={units === "F"}
+          />
+          ºF
+        </label>
       </form>
       <div className="weather-info">
         <div className="info-small">{cityLocalTime}</div>
@@ -142,7 +181,7 @@ function App() {
           <WeatherIcon icon={weatherIcon} weather={weatherDescription} />
           <div>
             <div className="temp-current">
-              {tempConvertor(weatherData.main.temp)} ºC
+              {tempConverter(weatherData.main.temp)} º{units}
             </div>
             <div className="info-small">{weatherData.name}</div>
           </div>
@@ -158,7 +197,7 @@ function App() {
           />
           <WeatherExtraInfo
             align="right"
-            info={`${tempConvertor(weatherData.main.feels_like)} ºC`}
+            info={`${tempConverter(weatherData.main.feels_like)} º${units}`}
             description="feels like"
             image="thermometer-sunny.svg"
             imageAlt="thermometer in sunny weather"
@@ -166,7 +205,7 @@ function App() {
           />
           <WeatherExtraInfo
             align="left"
-            info={`${weatherData.main.humidity} %`}
+            info={`${weatherData.main.humidity}%`}
             description="humidity"
             image="humidity.svg"
             imageAlt="thermometer with raindrop"
