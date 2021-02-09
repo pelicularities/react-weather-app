@@ -15,6 +15,8 @@ function App() {
   const [weatherIcon, setWeatherIcon] = useState("loading");
   const [weatherDescription, setWeatherDescription] = useState("");
 
+  const [cityLocalTime, setCityLocalTime] = useState("");
+
   const baseUrl = "http://api.openweathermap.org/data/2.5/";
   const endpoint = "weather";
   const endpointForecast = "forecast";
@@ -27,6 +29,35 @@ function App() {
   const [forecastUrl, setForecastUrl] = useState(
     `${baseUrl}${endpointForecast}?q=${city}&appid=${process.env.REACT_APP_OWM_API_KEY}`
   );
+
+  const timeConverter = (date, offset, showDate = false) => {
+    // takes date object
+    // returns string in format hh:mm AM/PM
+    // offset is in seconds, and may not be
+    // an integer number of hours
+
+    const offsetMilliseconds = offset * 1000;
+    const localDate = new Date(date.getTime() + offsetMilliseconds);
+
+    const hours24 = localDate.getUTCHours();
+    const minutes = localDate.getUTCMinutes();
+    const minutesPadded = minutes < 9 ? `0${minutes}` : minutes;
+    const hours12 = hours24 % 12;
+    const ampm = hours24 < 12 ? "AM" : "PM";
+
+    const timeString = `${hours12}:${minutesPadded} ${ampm}`;
+
+    if (showDate) {
+      const day = localDate.getUTCDay();
+      const dateNumber = localDate.getUTCDate();
+      const month = localDate.getUTCMonth();
+      const year = localDate.getUTCFullYear();
+      const dateString = localDate.toLocaleDateString();
+      return `${dateString} ${timeString}`;
+    }
+
+    return timeString;
+  };
 
   useEffect(() => {
     fetch(queryUrl)
@@ -51,6 +82,7 @@ function App() {
       const iconCode = weatherData.weather[0].icon;
       setWeatherIcon(`http://openweathermap.org/img/wn/${iconCode}@2x.png`);
       setWeatherDescription(weatherData.weather[0].description);
+      setCityLocalTime(timeConverter(new Date(), weatherData.timezone, true));
     } catch (err) {
       console.log(err);
     }
@@ -71,28 +103,10 @@ function App() {
   };
 
   const currentDate = new Date();
-  const currentDate_string = currentDate.toString();
+  const currentDate_string = currentDate.toUTCString();
 
   const sunRise = new Date(weatherData.sys.sunrise * 1000);
   const sunSet = new Date(weatherData.sys.sunset * 1000);
-
-  const timeConverter = (date, offset) => {
-    // takes date object
-    // returns string in format hh:mm AM/PM
-    // offset is in seconds, and may not be
-    // an integer number of hours
-
-    const offsetMilliseconds = offset * 1000;
-    const localDate = new Date(date.getTime() + offsetMilliseconds);
-
-    const hours24 = localDate.getUTCHours();
-    const minutes = localDate.getUTCMinutes();
-    const minutesPadded = minutes < 9 ? `0${minutes}` : minutes;
-    const hours12 = hours24 % 12;
-    const ampm = hours24 < 12 ? "AM" : "PM";
-
-    return `${hours12}:${minutesPadded} ${ampm}`;
-  };
 
   const getPrecipitationChance = (forecastData) => {
     try {
@@ -109,16 +123,6 @@ function App() {
     }
   };
 
-  const getIconUrl = (weatherData) => {
-    try {
-      const iconCode = weatherData.weather[0].icon;
-      return `http://openweathermap.org/img/wn/${iconCode}@2x.png`;
-    } catch (err) {
-      console.log(err);
-      return "";
-    }
-  };
-
   return (
     <div className="App">
       <form onSubmit={handleSubmit}>
@@ -131,7 +135,7 @@ function App() {
         <input type="submit" value="Go" onSubmit={handleSubmit} />
       </form>
       <div className="weather-info">
-        <div className="info-small">{currentDate_string}</div>
+        <div className="info-small">{cityLocalTime}</div>
         <div className="weather-info-main">
           <WeatherIcon icon={weatherIcon} weather={weatherDescription} />
           <div>
