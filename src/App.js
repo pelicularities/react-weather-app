@@ -37,7 +37,8 @@ function App() {
     // returns string in format hh:mm AM/PM
     // offset is in seconds, and may not be
     // an integer number of hours
-
+    // for line 44, it seems that GMT 0 and GMT -ve countries's date objects are OK
+    // however, GMT +ve countries's date objects need to minus 1 day's worth of milliseconds
     const offsetMilliseconds = offset * 1000;
     console.log(offsetMilliseconds)
     const localDate = offsetMilliseconds <= 0 ? new Date(date.getTime()  + offsetMilliseconds) : new Date(date.getTime()  + offsetMilliseconds - 86400000);
