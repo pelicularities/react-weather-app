@@ -71,6 +71,8 @@ input[type="submit"] {
 
 .abcde {
   width: 60px;
+  margin-left: 15px;
+  margin-right: 15px;
 }
 .icon {
   width: 100%;
@@ -84,4 +86,44 @@ input[type="submit"] {
   align-items: center;
   justify-content: flex-start;
   text-align: left;
+}
+
+.attribution {
+  margin-top: 30px;
+  font-size: 10px;
+  color: lightgray;
+}
+
+.attribution a {
+  font-size: 10px;
+  color: lightgray;
+}
+
+.tooltip {
+  position: relative;
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 120px;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  padding: 5px 0;
+  border-radius: 6px;
+  position: absolute;
+  z-index: 1;
+}
+
+.tooltip.weather-info-cell-left .tooltiptext {
+  left: 0px;
+}
+
+.tooltip.weather-info-cell-right .tooltiptext {
+  right: 0px;
+}
+
+/* Show the tooltip text when you mouse over the tooltip container */
+.tooltip:hover .tooltiptext {
+  visibility: visible;
 }

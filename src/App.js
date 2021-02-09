@@ -8,6 +8,7 @@ function App() {
     main: {},
     sys: {},
     weather: [{}],
+    wind : {speed: 0.00}
   });
 
   const [forecastData, setForecastData] = useState({ list: [{}] });
@@ -149,17 +150,19 @@ function App() {
         <div className="weather-info-extras">
           <WeatherExtraInfo
             align="left"
-            info={`${tempConvertor(weatherData.main.temp_min)} ºC`}
-            description="minimum"
-            image="thermometer-cold.svg"
-            imageAlt="thermometer in cold weather"
+            info={getPrecipitationChance(forecastData)}
+            description="precipitation chance"
+            image="umbrella.svg"
+            imageAlt="umbrella in rainy weather"
+            tooltip="Chance of rain/snow in the next 3 hours"
           />
           <WeatherExtraInfo
             align="right"
-            info={`${tempConvertor(weatherData.main.temp_max)} ºC`}
-            description="maximum"
+            info={`${tempConvertor(weatherData.main.feels_like)} ºC`}
+            description="feels like"
             image="thermometer-sunny.svg"
             imageAlt="thermometer in sunny weather"
+            tooltip="What temperature it really feels like outside, when accounting for humidity and wind"
           />
           <WeatherExtraInfo
             align="left"
@@ -167,13 +170,15 @@ function App() {
             description="humidity"
             image="humidity.svg"
             imageAlt="thermometer with raindrop"
+            tooltip="Humidity levels of 20-60% are in the 'Comfortable Range'."
           />
           <WeatherExtraInfo
             align="right"
-            info={getPrecipitationChance(forecastData)}
-            description="precipitation chance"
-            image="umbrella.svg"
-            imageAlt="umbrella in rainy weather"
+            info={`${weatherData.wind.speed.toFixed(1)} m/s`}
+            description="wind speed"
+            image="windsock.svg"
+            imageAlt="windsock"
+            tooltip="Wind speeds above 12m/s can be dangerous"
           />
           <WeatherExtraInfo
             align="left"
@@ -181,6 +186,7 @@ function App() {
             description="sunrise"
             image="sunrise.svg"
             imageAlt="sun rising over horizon"
+            tooltip="The time the first rays of sun appear on the horizon"
           />
           <WeatherExtraInfo
             align="right"
@@ -188,10 +194,11 @@ function App() {
             description="sunset"
             image="sunset.svg"
             imageAlt="sun setting on the horizon"
+            tooltip="The time the last rays of sun disappear over the horizon"
           />
         </div>
       </div>
-      <div>
+      <div className="attribution">
         Icons made by{" "}
         <a href="https://www.freepik.com" title="Freepik">
           Freepik
