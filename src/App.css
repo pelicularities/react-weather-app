@@ -32,18 +32,15 @@ input[type="submit"] {
   justify-content: center;
 }
 
-
 .weather-info-extras {
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-gap: 20px;
   margin-top: 25px;
-
 }
 
 .weather-info-cell {
   display: flex;
-  
 }
 .temp-current {
   font-size: 3rem;
@@ -56,46 +53,6 @@ input[type="submit"] {
 .info-small {
   font-size: 1rem;
   color: #888888;
-}
-
-.sun-image {
-  width: 100px;
-  height: 100px;
-  margin-top: 10px;
-}
-
-.sun-rise {
-  width: 100px;
-  height: 100px;
-  margin-top: 10px;
-}
-
-.raindrop {
-  width: 100px;
-  height: 100px;
-  margin-top: 10px;
-}
-
-.rain {
-  width: 100px;
-  height: 100px;
-  margin-top: 10px;
-}
-
-.down-arrow {
-  width: 20px;
-  height: 20px;
-  margin-top: 1px;
-}
-
-.up-arrow {
-  width: 20px;
-  height: 20px;
-  margin-top: 1px;
-}
-
-.icon {
-  display: block;
 }
 
 .width-200 {
@@ -118,6 +75,8 @@ input[type="submit"] {
 .icon {
   width: 100%;
   height: auto;
+  margin-top: 10px;
+  display: block;
 }
 
 .weather-info-cell-right {

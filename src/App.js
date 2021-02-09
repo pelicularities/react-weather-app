@@ -1,6 +1,7 @@
 import "./App.css";
 import React, { useState, useEffect } from "react";
 import WeatherIcon from "./components/WeatherIcon";
+import WeatherExtraInfo from "./components/WeatherExtraInfo";
 
 function App() {
   const [weatherData, setWeatherData] = useState({
@@ -141,94 +142,48 @@ function App() {
           </div>
         </div>
         <div className="weather-info-extras">
-          <div className="weather-info-cell-left">
-            <div>
-              <div className="info-medium">
-                {tempConvertor(weatherData.main.temp_min)} ºC
-              </div>
-              <div className="info-small">minimum</div>
-            </div>
-            <div className="abcde">
-              <img
-                className="icon down-arrow"
-                alt="down"
-                src={process.env.PUBLIC_URL + "/assets/thermometer-cold.svg"}
-              ></img>
-            </div>
-          </div>
-          <div className="weather-info-cell-right">
-            <div className="abcde">
-              <img
-                className="icon up-arrow"
-                alt="up"
-                src={process.env.PUBLIC_URL + "/assets/thermometer-sunny.svg"}
-              ></img>
-            </div>
-            <div>
-              <div className="info-medium">
-                {tempConvertor(weatherData.main.temp_max)} ºC
-              </div>
-              <div className="info-small">maximum</div>
-            </div>
-          </div>
-          <div className="weather-info-cell-left">
-            <div>
-              <div className="info-medium">{weatherData.main.humidity} %</div>
-              <div className="info-small">humidity</div>
-            </div>
-            <div className="abcde">
-              <img
-                className="icon raindrop"
-                src={process.env.PUBLIC_URL + "/assets/humidity.svg"}
-                alt="raindrop"
-              ></img>
-            </div>
-          </div>
-          <div className="weather-info-cell-right">
-            <div className="abcde">
-              <img
-                className="icon rain"
-                src={process.env.PUBLIC_URL + "/assets/umbrella.svg"}
-                alt="rain"
-              ></img>
-            </div>
-            <div>
-              <div className="info-medium">
-                {getPrecipitationChance(forecastData)}
-              </div>
-              <div className="info-small">precipitation chance</div>
-            </div>
-          </div>
-          <div className="weather-info-cell-left">
-            <div>
-              <div className="info-medium">
-                {timeConverter(sunRise, weatherData.timezone)}
-              </div>
-              <div className="info-small">sunrise</div>
-            </div>
-            <div className="abcde">
-              <img
-                className="icon sun-rise"
-                src={process.env.PUBLIC_URL + "/assets/sunrise.svg"}
-                alt="sunrise"
-              ></img>
-            </div>
-          </div>
-          <div className="weather-info-cell-right">
-            <div className="abcde">
-              <img
-                className="icon sun-rise"
-                src={process.env.PUBLIC_URL + "/assets/sunset.svg"}
-                alt="sunset"
-              ></img>
-            </div>
-            <div>
-              <div className="info-medium">
-                {timeConverter(sunSet, weatherData.timezone)}
-              </div>
-              <div className="info-small">sunset</div>
-            </div>
-          </div>
+          <WeatherExtraInfo
+            align="left"
+            info={`${tempConvertor(weatherData.main.temp_min)} ºC`}
+            description="minimum"
+            image="thermometer-cold.svg"
+            imageAlt="thermometer in cold weather"
+          />
+          <WeatherExtraInfo
+            align="right"
+            info={`${tempConvertor(weatherData.main.temp_max)} ºC`}
+            description="maximum"
+            image="thermometer-sunny.svg"
+            imageAlt="thermometer in sunny weather"
+          />
+          <WeatherExtraInfo
+            align="left"
+            info={`${weatherData.main.humidity} %`}
+            description="humidity"
+            image="humidity.svg"
+            imageAlt="thermometer with raindrop"
+          />
+          <WeatherExtraInfo
+            align="right"
+            info={getPrecipitationChance(forecastData)}
+            description="precipitation chance"
+            image="umbrella.svg"
+            imageAlt="umbrella in rainy weather"
+          />
+          <WeatherExtraInfo
+            align="left"
+            info={timeConverter(sunRise, weatherData.timezone)}
+            description="sunrise"
+            image="sunrise.svg"
+            imageAlt="sun rising over horizon"
+          />
+          <WeatherExtraInfo
+            align="right"
+            info={timeConverter(sunSet, weatherData.timezone)}
+            description="sunset"
+            image="sunset.svg"
+            imageAlt="sun setting on the horizon"
+          />
         </div>
       </div>
       <div>
