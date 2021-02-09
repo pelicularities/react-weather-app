@@ -61,20 +61,32 @@ function App() {
     return timeString;
   };
 
+  const getInitialDataUsingGeolocation = (position) => {
+    const lat = position.coords.latitude;
+    const long = position.coords.longitude;
+    setQueryUrl(
+      `${baseUrl}${endpoint}?lat=${lat}&lon=${long}&appid=${process.env.REACT_APP_OWM_API_KEY}`
+    );
+    setForecastUrl(
+      `${baseUrl}${endpointForecast}?lat=${lat}&lon=${long}&appid=${process.env.REACT_APP_OWM_API_KEY}`
+    );
+  };
+
+  const getInitialDataUsingDefaultCity = (city) => {
+    setQueryUrl(
+      `${baseUrl}${endpoint}?q=${city}&appid=${process.env.REACT_APP_OWM_API_KEY}`
+    );
+    setForecastUrl(
+      `${baseUrl}${endpointForecast}?q=${city}&appid=${process.env.REACT_APP_OWM_API_KEY}`
+    );
+  };
+
   useEffect(() => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition((position) => {
-        const lat = position.coords.latitude;
-        const long = position.coords.longitude;
-        setQueryUrl(
-          `${baseUrl}${endpoint}?lat=${lat}&lon=${long}&appid=${process.env.REACT_APP_OWM_API_KEY}`
-        );
-        setForecastUrl(
-          `${baseUrl}${endpointForecast}?lat=${lat}&lon=${long}&appid=${process.env.REACT_APP_OWM_API_KEY}`
-        );
-      });
-    }
-  }, []);
+    navigator.geolocation.getCurrentPosition(
+      (position) => getInitialDataUsingGeolocation(position),
+      getInitialDataUsingDefaultCity(city)
+    );
+  }, [city]);
 
   useEffect(() => {
     const fetchQuery = fetch(queryUrl)
