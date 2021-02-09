@@ -131,8 +131,9 @@ function App() {
           value={city}
           onChange={(e) => setCity(e.target.value)}
           placeholder="City name"
+          aria-label = "input-box"
         />
-        <input type="submit" value="Go" onSubmit={handleSubmit} />
+        <input type="submit" value="Go" onSubmit={handleSubmit} aria-label="go-button"/>
       </form>
       <div className="weather-info">
         <div className="info-small">{cityLocalTime}</div>
