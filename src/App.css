@@ -47,7 +47,11 @@ input[type="submit"] {
   color: #888888;
 }
 
-@media only screen and (max-width: 700px) {
+.temp-button-container {
+  margin-bottom: 10px;
+}
+
+@media only screen and (max-width: 768px) {
   /* body {
     width: max-content;
     height: max-content;
@@ -64,6 +68,9 @@ input[type="submit"] {
     margin-top: 25px;
   }
 
+  .temp-button-container {
+    margin-bottom: 10px;
+  }
   /* .temp-current-container {
     margin-top: 15px;
   }
