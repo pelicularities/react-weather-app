@@ -1,11 +1,11 @@
 import "./App.css";
 import React, { useState, useEffect } from "react";
-import WeatherIcon from "./components/WeatherIcon";
 import WeatherExtraInfo from "./components/WeatherExtraInfo";
 import LoaderApp from "./components/LoaderApp";
 import MessageFlash from "./components/MessageFlash";
-import WeatherInfo from "./components/WeatherInfo";
+import WeatherMainInfo from "./components/WeatherMainInfo";
 import Footer from "./components/Footer";
+import WeatherInfo from "./components/WeatherInfo";
 
 function App() {
   // constants
@@ -14,10 +14,7 @@ function App() {
   const endpointForecast = "forecast";
 
   // state and state-dependent declarations
-  const [messageFlash, setMessageFlash] = useState({
-    message: "",
-    className: "",
-  });
+  const [isValidCity, setIsValidCity] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [units, setUnits] = useState("C");
   const [weatherData, setWeatherData] = useState({
@@ -34,6 +31,7 @@ function App() {
   const [weatherDescription, setWeatherDescription] = useState("");
   const [cityLocalTime, setCityLocalTime] = useState("");
   const [city, setCity] = useState("London");
+  const [queryCity, setQueryCity] = useState("London");
   const [queryUrl, setQueryUrl] = useState(
     `${baseUrl}${endpoint}?q=${city}&appid=${process.env.REACT_APP_OWM_API_KEY}`
   );
@@ -47,26 +45,24 @@ function App() {
       getInitialDataUsingGeolocation,
       getInitialDataUsingDefaultCity
     );
-  });
+  }, []);
 
-  useEffect(() => {
-    if (messageFlash.message === "") return;
-    setTimeout(() => {
-      setMessageFlash({ message: "", className: "" });
-    }, 6000);
-  }, [messageFlash]);
+  // useEffect(() => {
+  //   if (messageFlash.message === "") return;
+  //   setTimeout(() => {
+  //     setMessageFlash({ message: "", className: "" });
+  //   }, 6000);
+  // }, [messageFlash]);
 
   useEffect(() => {
     const fetchQuery = fetch(queryUrl)
       .then((response) => response.json())
       .then((json) => {
         if (json.cod === "404") {
-          setMessageFlash({
-            message: `Can't find weather data for ${city} 😞`,
-            className: "error",
-          });
+          setIsValidCity(false);
         } else {
           setWeatherData(json);
+          setIsValidCity(true);
         }
       })
       .catch(console.log);
@@ -75,12 +71,10 @@ function App() {
       .then((response) => response.json())
       .then((json) => {
         if (json.cod === "404") {
-          setMessageFlash({
-            message: `Can't find weather data for ${city} 😞`,
-            className: "error",
-          });
+          setIsValidCity(false);
         } else {
           setForecastData(json);
+          setIsValidCity(true);
         }
       })
       .catch(console.log);
@@ -193,16 +187,13 @@ function App() {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (city === "") return;
+    setQueryCity(city);
     setQueryUrl(
       `${baseUrl}${endpoint}?q=${city}&appid=${process.env.REACT_APP_OWM_API_KEY}`
     );
     setForecastUrl(
       `${baseUrl}${endpointForecast}?q=${city}&appid=${process.env.REACT_APP_OWM_API_KEY}`
     );
-  };
-
-  const showToolTip = (tooltip) => {
-    setMessageFlash({ message: tooltip, className: "tool-tip" });
   };
 
   return (
@@ -248,7 +239,8 @@ function App() {
             </label>
           </div>
         </form>
-        <div className="weather-info">
+        {isValidCity === false && `No weather data found for ${queryCity} 😞 `}
+        {isValidCity && (
           <WeatherInfo
             cityName={weatherData.name}
             temp={tempConverter(weatherData.main.temp)}
@@ -256,100 +248,16 @@ function App() {
             cityLocalTime={cityLocalTime}
             icon={weatherIcon}
             weather={weatherDescription}
+            precipitation={getPrecipitationChance(forecastData)}
+            feelsLike={`${tempConverter(
+              weatherData.main.feels_like
+            )} º${units}`}
+            humidity={`${weatherData.main.humidity}%`}
+            windSpeed={`${weatherData.wind.speed.toFixed(1)} m/s`}
+            sunrise={timeConverter(sunRise, weatherData.timezone)}
+            sunset={timeConverter(sunSet, weatherData.timezone)}
           />
-          <MessageFlash
-            message={messageFlash.message}
-            className={messageFlash.className}
-          />
-          <div className="weather-info-extras">
-            <div
-              onMouseOver={() => {
-                showToolTip("Chance of rain/snow in the next 3 hours");
-              }}
-            >
-              <WeatherExtraInfo
-                align="left"
-                info={getPrecipitationChance(forecastData)}
-                description="precipitation chance"
-                image="umbrella.svg"
-                imageAlt="umbrella in rainy weather"
-              />
-            </div>
-            <div
-              onMouseOver={() => {
-                showToolTip(
-                  "What temperature it really feels like outside, when accounting for humidity and wind"
-                );
-              }}
-            >
-              <WeatherExtraInfo
-                align="right"
-                info={`${tempConverter(weatherData.main.feels_like)} º${units}`}
-                description="feels like"
-                image="thermometer-sunny.svg"
-                imageAlt="thermometer in sunny weather"
-              />
-            </div>
-            <div
-              onMouseOver={() => {
-                showToolTip(
-                  "Humidity levels of 20-60% are in the 'Comfortable Range'."
-                );
-              }}
-            >
-              <WeatherExtraInfo
-                align="left"
-                info={`${weatherData.main.humidity}%`}
-                description="humidity"
-                image="humidity.svg"
-                imageAlt="thermometer with raindrop"
-              />
-            </div>
-            <div
-              onMouseOver={() => {
-                showToolTip("Wind speeds above 12m/s can be dangerous");
-              }}
-            >
-              <WeatherExtraInfo
-                align="right"
-                info={`${weatherData.wind.speed.toFixed(1)} m/s`}
-                description="wind speed"
-                image="windsock.svg"
-                imageAlt="windsock"
-              />
-            </div>
-            <div
-              onMouseOver={() => {
-                showToolTip(
-                  "The time the first rays of sun appear on the horizon"
-                );
-              }}
-            >
-              <WeatherExtraInfo
-                align="left"
-                info={timeConverter(sunRise, weatherData.timezone)}
-                description="sunrise"
-                image="sunrise.svg"
-                imageAlt="sun rising over horizon"
-              />
-            </div>
-            <div
-              onMouseOver={() => {
-                showToolTip(
-                  "The time the last rays of sun disappear over the horizon"
-                );
-              }}
-            >
-              <WeatherExtraInfo
-                align="right"
-                info={timeConverter(sunSet, weatherData.timezone)}
-                description="sunset"
-                image="sunset.svg"
-                imageAlt="sun setting on the horizon"
-              />
-            </div>
-          </div>
-        </div>
+        )}
         <Footer />
       </div>
     </div>
