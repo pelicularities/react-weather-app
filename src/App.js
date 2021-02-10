@@ -223,28 +223,30 @@ function App() {
             onSubmit={handleSubmit}
             aria-label="go-button"
           />
-          <label htmlFor="C">
-            <input
-              type="radio"
-              id="C"
-              name="units"
-              value="C"
-              onChange={changeUnits}
-              checked={units === "C"}
-            />
-            ºC
-          </label>
-          <label htmlFor="F">
-            <input
-              type="radio"
-              id="F"
-              name="units"
-              value="F"
-              onChange={changeUnits}
-              checked={units === "F"}
-            />
-            ºF
-          </label>
+          <div className="temp-button-container">
+            <label htmlFor="C">
+              <input
+                type="radio"
+                id="C"
+                name="units"
+                value="C"
+                onChange={changeUnits}
+                checked={units === "C"}
+              />
+              ºC
+            </label>
+            <label htmlFor="F">
+              <input
+                type="radio"
+                id="F"
+                name="units"
+                value="F"
+                onChange={changeUnits}
+                checked={units === "F"}
+              />
+              ºF
+            </label>
+          </div>
         </form>
         <div className="weather-info">
           <WeatherInfo
