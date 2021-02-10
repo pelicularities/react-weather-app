@@ -4,8 +4,16 @@ import WeatherIcon from "./components/WeatherIcon";
 import WeatherExtraInfo from "./components/WeatherExtraInfo";
 import LoaderApp from "./components/LoaderApp";
 import MessageFlash from "./components/MessageFlash";
+import WeatherInfo from "./components/WeatherInfo";
+import Footer from "./components/Footer";
 
 function App() {
+  // constants
+  const baseUrl = "http://api.openweathermap.org/data/2.5/";
+  const endpoint = "weather";
+  const endpointForecast = "forecast";
+
+  // state and state-dependent declarations
   const [messageFlash, setMessageFlash] = useState({
     message: "",
     className: "",
@@ -18,27 +26,86 @@ function App() {
     weather: [{}],
     wind: { speed: 0.0 },
   });
+  const sunRise = weatherData.sys.sunrise * 1000;
+  const sunSet = weatherData.sys.sunset * 1000;
 
   const [forecastData, setForecastData] = useState({ list: [{}] });
-
   const [weatherIcon, setWeatherIcon] = useState("loading");
   const [weatherDescription, setWeatherDescription] = useState("");
-
   const [cityLocalTime, setCityLocalTime] = useState("");
-
-  const baseUrl = "http://api.openweathermap.org/data/2.5/";
-  const endpoint = "weather";
-  const endpointForecast = "forecast";
   const [city, setCity] = useState("London");
-
   const [queryUrl, setQueryUrl] = useState(
     `${baseUrl}${endpoint}?q=${city}&appid=${process.env.REACT_APP_OWM_API_KEY}`
   );
-
   const [forecastUrl, setForecastUrl] = useState(
     `${baseUrl}${endpointForecast}?q=${city}&appid=${process.env.REACT_APP_OWM_API_KEY}`
   );
 
+  // effects
+  useEffect(() => {
+    navigator.geolocation.getCurrentPosition(
+      getInitialDataUsingGeolocation,
+      getInitialDataUsingDefaultCity
+    );
+  });
+
+  useEffect(() => {
+    if (messageFlash.message === "") return;
+    setTimeout(() => {
+      setMessageFlash({ message: "", className: "" });
+    }, 6000);
+  }, [messageFlash]);
+
+  useEffect(() => {
+    const fetchQuery = fetch(queryUrl)
+      .then((response) => response.json())
+      .then((json) => {
+        if (json.cod === "404") {
+          setMessageFlash({
+            message: `Can't find weather data for ${city} 😞`,
+            className: "error",
+          });
+        } else {
+          setWeatherData(json);
+        }
+      })
+      .catch(console.log);
+
+    const fetchForecast = fetch(forecastUrl)
+      .then((response) => response.json())
+      .then((json) => {
+        if (json.cod === "404") {
+          setMessageFlash({
+            message: `Can't find weather data for ${city} 😞`,
+            className: "error",
+          });
+        } else {
+          setForecastData(json);
+        }
+      })
+      .catch(console.log);
+
+    Promise.all([fetchQuery, fetchForecast]).then(() => {
+      setIsLoading(false);
+    });
+  }, [queryUrl, forecastUrl]);
+
+  useEffect(() => {
+    try {
+      const iconCode = weatherData.weather[0].icon;
+      if (!iconCode) return;
+      setWeatherIcon(
+        `${process.env.PUBLIC_URL}/assets/owm_weather_codes/${iconCode}@2x.png`
+      );
+      setWeatherDescription(weatherData.weather[0].description);
+      setCityLocalTime(timeConverter(Date.now(), weatherData.timezone, true));
+      // setIsLoading(false);
+    } catch (err) {
+      console.log(err);
+    }
+  }, [weatherData]);
+
+  // functions - conversions
   const timeConverter = (date, offset, showDate = false) => {
     // takes date as timestamp, not as date object
     // shows time in this format: 1:23 pm
@@ -70,6 +137,19 @@ function App() {
     return timeString;
   };
 
+  const tempConverter = (temp) => {
+    let convertedTemp = "";
+    if (units === "F") {
+      convertedTemp = ((temp - 273.15) * 9) / 5 + 32;
+    } else {
+      convertedTemp = temp - 273.15;
+    }
+
+    return convertedTemp.toFixed(1);
+  };
+
+  // functions - API-related
+
   const getInitialDataUsingGeolocation = (position) => {
     const lat = position.coords.latitude;
     const long = position.coords.longitude;
@@ -90,96 +170,6 @@ function App() {
     );
   };
 
-  useEffect(() => {
-    if (messageFlash.message === "") return;
-    setTimeout(() => {
-      setMessageFlash({ message: "", className: "" });
-    }, 6000);
-  }, [messageFlash]);
-
-  useEffect(() => {
-    navigator.geolocation.getCurrentPosition(
-      getInitialDataUsingGeolocation,
-      getInitialDataUsingDefaultCity
-    );
-  }, []);
-
-  useEffect(() => {
-    const fetchQuery = fetch(queryUrl)
-      .then((response) => response.json())
-      .then((json) => {
-        if (json.cod === "404") {
-          setMessageFlash({
-            message: `Can't find weather data for ${city} 😞`,
-            className: "error",
-          });
-        } else {
-          setWeatherData(json);
-          console.log(weatherData);
-        }
-      })
-      .catch(console.log);
-
-    const fetchForecast = fetch(forecastUrl)
-      .then((response) => response.json())
-      .then((json) => {
-        if (json.cod === "404") {
-          setMessageFlash({
-            message: `Can't find weather data for ${city} 😞`,
-            className: "error",
-          });
-        } else {
-          setForecastData(json);
-          console.log(forecastData.list[0]);
-        }
-      })
-      .catch(console.log);
-
-    Promise.all([fetchQuery, fetchForecast]).then(() => {
-      setIsLoading(false);
-    });
-  }, [queryUrl, forecastUrl]);
-
-  useEffect(() => {
-    try {
-      const iconCode = weatherData.weather[0].icon;
-      if (!iconCode) return;
-      setWeatherIcon(
-        `${process.env.PUBLIC_URL}/assets/owm_weather_codes/${iconCode}@2x.png`
-      );
-      setWeatherDescription(weatherData.weather[0].description);
-      setCityLocalTime(timeConverter(Date.now(), weatherData.timezone, true));
-      // setIsLoading(false);
-    } catch (err) {
-      console.log(err);
-    }
-  }, [weatherData]);
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (city === "") return;
-    setQueryUrl(
-      `${baseUrl}${endpoint}?q=${city}&appid=${process.env.REACT_APP_OWM_API_KEY}`
-    );
-    setForecastUrl(
-      `${baseUrl}${endpointForecast}?q=${city}&appid=${process.env.REACT_APP_OWM_API_KEY}`
-    );
-  };
-
-  const tempConverter = (temp) => {
-    let convertedTemp = "";
-    if (units === "F") {
-      convertedTemp = ((temp - 273.15) * 9) / 5 + 32;
-    } else {
-      convertedTemp = temp - 273.15;
-    }
-
-    return convertedTemp.toFixed(1);
-  };
-
-  const sunRise = weatherData.sys.sunrise * 1000;
-  const sunSet = weatherData.sys.sunset * 1000;
-
   const getPrecipitationChance = (forecastData) => {
     try {
       if (forecastData.list[0].pop) {
@@ -195,8 +185,20 @@ function App() {
     }
   };
 
+  // functions - event handlers
   const changeUnits = (e) => {
     setUnits(e.target.value);
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (city === "") return;
+    setQueryUrl(
+      `${baseUrl}${endpoint}?q=${city}&appid=${process.env.REACT_APP_OWM_API_KEY}`
+    );
+    setForecastUrl(
+      `${baseUrl}${endpointForecast}?q=${city}&appid=${process.env.REACT_APP_OWM_API_KEY}`
+    );
   };
 
   const showToolTip = (tooltip) => {
@@ -245,16 +247,14 @@ function App() {
           </label>
         </form>
         <div className="weather-info">
-          <div className="info-small">{cityLocalTime}</div>
-          <div className="weather-info-main">
-            <WeatherIcon icon={weatherIcon} weather={weatherDescription} />
-            <div className="temp-current-container">
-              <div className="temp-current">
-                {tempConverter(weatherData.main.temp)} º{units}
-              </div>
-              <div className="info-small">{weatherData.name}</div>
-            </div>
-          </div>
+          <WeatherInfo
+            cityName={weatherData.name}
+            temp={tempConverter(weatherData.main.temp)}
+            units={units}
+            cityLocalTime={cityLocalTime}
+            icon={weatherIcon}
+            weather={weatherDescription}
+          />
           <MessageFlash
             message={messageFlash.message}
             className={messageFlash.className}
@@ -348,16 +348,7 @@ function App() {
             </div>
           </div>
         </div>
-        <div className="attribution">
-          Icons made by{" "}
-          <a href="https://www.freepik.com" title="Freepik">
-            Freepik
-          </a>{" "}
-          from{" "}
-          <a href="https://www.flaticon.com/" title="Flaticon">
-            www.flaticon.com
-          </a>
-        </div>
+        <Footer />
       </div>
     </div>
   );

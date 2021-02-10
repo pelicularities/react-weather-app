@@ -1,4 +1,5 @@
 import React from "react";
+import "../stylesheets/WeatherExtraInfo.css";
 
 function WeatherExtraInfo({ align, info, description, image, imageAlt }) {
   function ExtraInfoIcon({ image, imageAlt }) {
@@ -23,12 +24,12 @@ function WeatherExtraInfo({ align, info, description, image, imageAlt }) {
   }
 
   return align === "left" ? (
-    <div className={`weather-info-cell-left tooltip`}>
+    <div className={`weather-info-cell-left`}>
       <ExtraInfoText info={info} description={description} />
       <ExtraInfoIcon image={image} imageAlt={imageAlt} />
     </div>
   ) : (
-    <div className={`weather-info-cell-right tooltip`}>
+    <div className={`weather-info-cell-right`}>
       <ExtraInfoIcon image={image} imageAlt={imageAlt} />
       <ExtraInfoText info={info} description={description} />
     </div>
