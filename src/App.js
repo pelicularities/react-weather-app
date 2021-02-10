@@ -3,8 +3,13 @@ import React, { useState, useEffect } from "react";
 import WeatherIcon from "./components/WeatherIcon";
 import WeatherExtraInfo from "./components/WeatherExtraInfo";
 import LoaderApp from "./components/LoaderApp";
+import MessageFlash from "./components/MessageFlash";
 
 function App() {
+  const [messageFlash, setMessageFlash] = useState({
+    message: "",
+    className: "",
+  });
   const [isLoading, setIsLoading] = useState(true);
   const [units, setUnits] = useState("C");
   const [weatherData, setWeatherData] = useState({
@@ -120,6 +125,13 @@ function App() {
   };
 
   useEffect(() => {
+    if (messageFlash.message === "") return;
+    setTimeout(() => {
+      setMessageFlash({ message: "", className: "" });
+    }, 6000);
+  }, [messageFlash]);
+
+  useEffect(() => {
     navigator.geolocation.getCurrentPosition(
       getInitialDataUsingGeolocation,
       getInitialDataUsingDefaultCity
@@ -130,18 +142,32 @@ function App() {
     const fetchQuery = fetch(queryUrl)
       .then((response) => response.json())
       .then((json) => {
-        setWeatherData(json);
-        console.log(weatherData);
+        if (json.cod === "404") {
+          setMessageFlash({
+            message: `Can't find weather data for ${city} 😞`,
+            className: "error",
+          });
+        } else {
+          setWeatherData(json);
+          console.log(weatherData);
+        }
       })
-      .catch((err) => console.log(err));
+      .catch(console.log);
 
     const fetchForecast = fetch(forecastUrl)
       .then((response) => response.json())
       .then((json) => {
-        setForecastData(json);
-        console.log(forecastData.list[0]);
+        if (json.cod === "404") {
+          setMessageFlash({
+            message: `Can't find weather data for ${city} 😞`,
+            className: "error",
+          });
+        } else {
+          setForecastData(json);
+          console.log(forecastData.list[0]);
+        }
       })
-      .catch((err) => console.log(err));
+      .catch(console.log);
 
     Promise.all([fetchQuery, fetchForecast]).then(() => {
       setIsLoading(false);
@@ -262,6 +288,10 @@ function App() {
               <div className="info-small">{weatherData.name}</div>
             </div>
           </div>
+          <MessageFlash
+            message={messageFlash.message}
+            className={messageFlash.className}
+          />
           <div className="weather-info-extras">
             <WeatherExtraInfo
               align="left"

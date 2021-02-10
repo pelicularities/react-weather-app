@@ -1,0 +1,12 @@
+.message-flash {
+  padding: 0.5rem;
+  height: 26px;
+}
+
+.error {
+  background-color: #ffcccc;
+}
+
+.tool-tip {
+  background-color: #fffccc;
+}
