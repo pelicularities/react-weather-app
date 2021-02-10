@@ -255,7 +255,7 @@ function App() {
           <div className="info-small">{cityLocalTime}</div>
           <div className="weather-info-main">
             <WeatherIcon icon={weatherIcon} weather={weatherDescription} />
-            <div>
+            <div className="temp-current-container">
               <div className="temp-current">
                 {tempConverter(weatherData.main.temp)} º{units}
               </div>
