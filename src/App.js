@@ -6,6 +6,8 @@ import MessageFlash from "./components/MessageFlash";
 import WeatherMainInfo from "./components/WeatherMainInfo";
 import Footer from "./components/Footer";
 import WeatherInfo from "./components/WeatherInfo";
+import Switch from '@material-ui/core/Switch';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 
 function App() {
   // constants
@@ -181,7 +183,12 @@ function App() {
 
   // functions - event handlers
   const changeUnits = (e) => {
-    setUnits(e.target.value);
+    const isCelsius = e.target.checked;
+    if (isCelsius) {
+      setUnits("C")
+    } else {
+      setUnits("F")
+    }
   };
 
   const handleSubmit = (e) => {
@@ -215,28 +222,10 @@ function App() {
             aria-label="go-button"
           />
           <div className="temp-button-container">
-            <label htmlFor="C">
-              <input
-                type="radio"
-                id="C"
-                name="units"
-                value="C"
-                onChange={changeUnits}
-                checked={units === "C"}
-              />
-              ºC
-            </label>
-            <label htmlFor="F">
-              <input
-                type="radio"
-                id="F"
-                name="units"
-                value="F"
-                onChange={changeUnits}
-                checked={units === "F"}
-              />
-              ºF
-            </label>
+            <FormControlLabel
+              control={<Switch checked={units==="C"} onChange={changeUnits} color="primary"/>}
+              label="Celsius"
+      />
           </div>
         </form>
         {isValidCity === false && `No weather data found for ${queryCity} 😞 `}
