@@ -48,20 +48,31 @@ input[type="submit"] {
 }
 
 @media only screen and (max-width: 700px) {
-  body {
+  /* body {
     width: max-content;
     height: max-content;
+  } */
+
+  .App {
+    width: 100%;
   }
 
-  .temp-current-container {
+  .weather-info-extras {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 2px;
+    margin-top: 25px;
+  }
+
+  /* .temp-current-container {
     margin-top: 15px;
   }
-
+  
   .weather-info {
     width: auto;
     height: auto;
   }
-
+  
   .temp-current {
     font-size: 2rem;
   }
@@ -81,5 +92,5 @@ input[type="submit"] {
 
   .attribution a {
     font-size: 5px;
-  }
+  } */
 }

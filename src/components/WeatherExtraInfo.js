@@ -4,7 +4,7 @@ import "../stylesheets/WeatherExtraInfo.css";
 function WeatherExtraInfo({ align, info, description, image, imageAlt }) {
   function ExtraInfoIcon({ image, imageAlt }) {
     return (
-      <div className="abcde">
+      <div className="icon-container">
         <img
           className="icon"
           alt={imageAlt}
