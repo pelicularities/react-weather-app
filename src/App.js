@@ -48,60 +48,59 @@ function App() {
     // however, GMT +ve countries's date objects need to minus 1 day's worth of milliseconds
     // whereas for even-number days, GMT -ve countries need to minus 1 day worth of ms
     // while for GMT +ve and 0 countries no change to it needed
-    
+
     const offsetMilliseconds = offset * 1000;
-    const milliseconds = date.getTime()
-    const d = new Date(milliseconds)
+    const milliseconds = date.getTime();
+    const d = new Date(milliseconds);
     if (d.getUTCDate() % 2 === 0) {
       let localDate =
-      offsetMilliseconds < 0
+        offsetMilliseconds < 0
           ? new Date(date.getTime() + offsetMilliseconds - 86400000)
           : new Date(date.getTime() + offsetMilliseconds);
 
-        const hours24 = localDate.getUTCHours();
-        const minutes = localDate.getUTCMinutes();
-        const minutesPadded = minutes <= 9 ? `0${minutes}` : minutes;
-        const hours12 = hours24 % 12;
-        const ampm = hours24 < 12 ? "AM" : "PM";
-    
-        const timeString = `${hours12}:${minutesPadded} ${ampm}`;
-    
-        if (showDate) {
-          const day = localDate.getUTCDay();
-          const dateNumber = localDate.getUTCDate();
-          const month = localDate.getUTCMonth();
-          const year = localDate.getUTCFullYear();
-          const dateString = localDate.toLocaleDateString();
-          return `${dateString} ${timeString}`;
-          }
-      
-        return timeString;
+      const hours24 = localDate.getUTCHours();
+      const minutes = localDate.getUTCMinutes();
+      const minutesPadded = minutes <= 9 ? `0${minutes}` : minutes;
+      const hours12 = hours24 % 12;
+      const ampm = hours24 < 12 ? "AM" : "PM";
 
+      const timeString = `${hours12}:${minutesPadded} ${ampm}`;
+
+      if (showDate) {
+        const day = localDate.getUTCDay();
+        const dateNumber = localDate.getUTCDate();
+        const month = localDate.getUTCMonth();
+        const year = localDate.getUTCFullYear();
+        const dateString = localDate.toLocaleDateString();
+        return `${dateString} ${timeString}`;
+      }
+
+      return timeString;
     } else {
-        let localDate =
+      let localDate =
         offsetMilliseconds <= 0
           ? new Date(date.getTime() + offsetMilliseconds)
           : new Date(date.getTime() + offsetMilliseconds - 86400000);
-        
-        const hours24 = localDate.getUTCHours();
-        const minutes = localDate.getUTCMinutes();
-        const minutesPadded = minutes <= 9 ? `0${minutes}` : minutes;
-        const hours12 = hours24 % 12;
-        const ampm = hours24 < 12 ? "AM" : "PM";
-    
-        const timeString = `${hours12}:${minutesPadded} ${ampm}`;
-    
-        if (showDate) {
-          const day = localDate.getUTCDay();
-          const dateNumber = localDate.getUTCDate();
-          const month = localDate.getUTCMonth();
-          const year = localDate.getUTCFullYear();
-          const dateString = localDate.toLocaleDateString();
-          return `${dateString} ${timeString}`;
-          }
-      
-        return timeString;
-    } 
+
+      const hours24 = localDate.getUTCHours();
+      const minutes = localDate.getUTCMinutes();
+      const minutesPadded = minutes <= 9 ? `0${minutes}` : minutes;
+      const hours12 = hours24 % 12;
+      const ampm = hours24 < 12 ? "AM" : "PM";
+
+      const timeString = `${hours12}:${minutesPadded} ${ampm}`;
+
+      if (showDate) {
+        const day = localDate.getUTCDay();
+        const dateNumber = localDate.getUTCDate();
+        const month = localDate.getUTCMonth();
+        const year = localDate.getUTCFullYear();
+        const dateString = localDate.toLocaleDateString();
+        return `${dateString} ${timeString}`;
+      }
+
+      return timeString;
+    }
   };
 
   const getInitialDataUsingGeolocation = (position) => {
@@ -236,6 +235,10 @@ function App() {
     setUnits(e.target.value);
   };
 
+  const showToolTip = (tooltip) => {
+    setMessageFlash({ message: tooltip, className: "tool-tip" });
+  };
+
   return (
     <div className="App">
       <LoaderApp loading={isLoading} />
@@ -293,54 +296,92 @@ function App() {
             className={messageFlash.className}
           />
           <div className="weather-info-extras">
-            <WeatherExtraInfo
-              align="left"
-              info={getPrecipitationChance(forecastData)}
-              description="precipitation chance"
-              image="umbrella.svg"
-              imageAlt="umbrella in rainy weather"
-              tooltip="Chance of rain/snow in the next 3 hours"
-            />
-            <WeatherExtraInfo
-              align="right"
-              info={`${tempConverter(weatherData.main.feels_like)} º${units}`}
-              description="feels like"
-              image="thermometer-sunny.svg"
-              imageAlt="thermometer in sunny weather"
-              tooltip="What temperature it really feels like outside, when accounting for humidity and wind"
-            />
-            <WeatherExtraInfo
-              align="left"
-              info={`${weatherData.main.humidity}%`}
-              description="humidity"
-              image="humidity.svg"
-              imageAlt="thermometer with raindrop"
-              tooltip="Humidity levels of 20-60% are in the 'Comfortable Range'."
-            />
-            <WeatherExtraInfo
-              align="right"
-              info={`${weatherData.wind.speed.toFixed(1)} m/s`}
-              description="wind speed"
-              image="windsock.svg"
-              imageAlt="windsock"
-              tooltip="Wind speeds above 12m/s can be dangerous"
-            />
-            <WeatherExtraInfo
-              align="left"
-              info={timeConverter(sunRise, weatherData.timezone)}
-              description="sunrise"
-              image="sunrise.svg"
-              imageAlt="sun rising over horizon"
-              tooltip="The time the first rays of sun appear on the horizon"
-            />
-            <WeatherExtraInfo
-              align="right"
-              info={timeConverter(sunSet, weatherData.timezone)}
-              description="sunset"
-              image="sunset.svg"
-              imageAlt="sun setting on the horizon"
-              tooltip="The time the last rays of sun disappear over the horizon"
-            />
+            <div
+              onMouseOver={() => {
+                showToolTip("Chance of rain/snow in the next 3 hours");
+              }}
+            >
+              <WeatherExtraInfo
+                align="left"
+                info={getPrecipitationChance(forecastData)}
+                description="precipitation chance"
+                image="umbrella.svg"
+                imageAlt="umbrella in rainy weather"
+              />
+            </div>
+            <div
+              onMouseOver={() => {
+                showToolTip(
+                  "What temperature it really feels like outside, when accounting for humidity and wind"
+                );
+              }}
+            >
+              <WeatherExtraInfo
+                align="right"
+                info={`${tempConverter(weatherData.main.feels_like)} º${units}`}
+                description="feels like"
+                image="thermometer-sunny.svg"
+                imageAlt="thermometer in sunny weather"
+              />
+            </div>
+            <div
+              onMouseOver={() => {
+                showToolTip(
+                  "Humidity levels of 20-60% are in the 'Comfortable Range'."
+                );
+              }}
+            >
+              <WeatherExtraInfo
+                align="left"
+                info={`${weatherData.main.humidity}%`}
+                description="humidity"
+                image="humidity.svg"
+                imageAlt="thermometer with raindrop"
+              />
+            </div>
+            <div
+              onMouseOver={() => {
+                showToolTip("Wind speeds above 12m/s can be dangerous");
+              }}
+            >
+              <WeatherExtraInfo
+                align="right"
+                info={`${weatherData.wind.speed.toFixed(1)} m/s`}
+                description="wind speed"
+                image="windsock.svg"
+                imageAlt="windsock"
+              />
+            </div>
+            <div
+              onMouseOver={() => {
+                showToolTip(
+                  "The time the first rays of sun appear on the horizon"
+                );
+              }}
+            >
+              <WeatherExtraInfo
+                align="left"
+                info={timeConverter(sunRise, weatherData.timezone)}
+                description="sunrise"
+                image="sunrise.svg"
+                imageAlt="sun rising over horizon"
+              />
+            </div>
+            <div
+              onMouseOver={() => {
+                showToolTip(
+                  "The time the last rays of sun disappear over the horizon"
+                );
+              }}
+            >
+              <WeatherExtraInfo
+                align="right"
+                info={timeConverter(sunSet, weatherData.timezone)}
+                description="sunset"
+                image="sunset.svg"
+                imageAlt="sun setting on the horizon"
+              />
+            </div>
           </div>
         </div>
         <div className="attribution">

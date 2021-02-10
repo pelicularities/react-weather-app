@@ -1,6 +1,6 @@
 .message-flash {
   padding: 0.5rem;
-  height: 26px;
+  min-height: 1.2rem;
 }
 
 .error {
@@ -8,5 +8,5 @@
 }
 
 .tool-tip {
-  background-color: #fffccc;
+  background-color: #eeeeee;
 }
