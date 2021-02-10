@@ -44,32 +44,64 @@ function App() {
     // returns string in format hh:mm AM/PM
     // offset is in seconds, and may not be
     // an integer number of hours
-    // for line 44, it seems that GMT 0 and GMT -ve countries's date objects are OK
+    // Observation: for odd-number days, it seems that GMT 0 and GMT -ve countries's date objects are OK
     // however, GMT +ve countries's date objects need to minus 1 day's worth of milliseconds
+    // whereas for even-number days, GMT -ve countries need to minus 1 day worth of ms
+    // while for GMT +ve and 0 countries no change to it needed
+    
     const offsetMilliseconds = offset * 1000;
-    // console.log(offsetMilliseconds);
-    const localDate =
-      offsetMilliseconds <= 0
-        ? new Date(date.getTime() + offsetMilliseconds)
-        : new Date(date.getTime() + offsetMilliseconds - 86400000);
-    const hours24 = localDate.getUTCHours();
-    const minutes = localDate.getUTCMinutes();
-    const minutesPadded = minutes < 9 ? `0${minutes}` : minutes;
-    const hours12 = hours24 % 12;
-    const ampm = hours24 < 12 ? "AM" : "PM";
+    const milliseconds = date.getTime()
+    const d = new Date(milliseconds)
+    if (d.getUTCDate() % 2 === 0) {
+      let localDate =
+      offsetMilliseconds < 0
+          ? new Date(date.getTime() + offsetMilliseconds - 86400000)
+          : new Date(date.getTime() + offsetMilliseconds);
 
-    const timeString = `${hours12}:${minutesPadded} ${ampm}`;
+        const hours24 = localDate.getUTCHours();
+        const minutes = localDate.getUTCMinutes();
+        const minutesPadded = minutes <= 9 ? `0${minutes}` : minutes;
+        const hours12 = hours24 % 12;
+        const ampm = hours24 < 12 ? "AM" : "PM";
+    
+        const timeString = `${hours12}:${minutesPadded} ${ampm}`;
+    
+        if (showDate) {
+          const day = localDate.getUTCDay();
+          const dateNumber = localDate.getUTCDate();
+          const month = localDate.getUTCMonth();
+          const year = localDate.getUTCFullYear();
+          const dateString = localDate.toLocaleDateString();
+          return `${dateString} ${timeString}`;
+          }
+      
+        return timeString;
 
-    if (showDate) {
-      const day = localDate.getUTCDay();
-      const dateNumber = localDate.getUTCDate();
-      const month = localDate.getUTCMonth();
-      const year = localDate.getUTCFullYear();
-      const dateString = localDate.toLocaleDateString();
-      return `${dateString} ${timeString}`;
-    }
-
-    return timeString;
+    } else {
+        let localDate =
+        offsetMilliseconds <= 0
+          ? new Date(date.getTime() + offsetMilliseconds)
+          : new Date(date.getTime() + offsetMilliseconds - 86400000);
+        
+        const hours24 = localDate.getUTCHours();
+        const minutes = localDate.getUTCMinutes();
+        const minutesPadded = minutes <= 9 ? `0${minutes}` : minutes;
+        const hours12 = hours24 % 12;
+        const ampm = hours24 < 12 ? "AM" : "PM";
+    
+        const timeString = `${hours12}:${minutesPadded} ${ampm}`;
+    
+        if (showDate) {
+          const day = localDate.getUTCDay();
+          const dateNumber = localDate.getUTCDate();
+          const month = localDate.getUTCMonth();
+          const year = localDate.getUTCFullYear();
+          const dateString = localDate.toLocaleDateString();
+          return `${dateString} ${timeString}`;
+          }
+      
+        return timeString;
+    } 
   };
 
   const getInitialDataUsingGeolocation = (position) => {
