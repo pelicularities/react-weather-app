@@ -40,67 +40,34 @@ function App() {
   );
 
   const timeConverter = (date, offset, showDate = false) => {
-    // takes date object
-    // returns string in format hh:mm AM/PM
+    // takes date as timestamp, not as date object
+    // shows time in this format: 1:23 pm
+    // if showDate is true, shows date in this format:
+    // Wed, 10 Feb 2021, 12:00 pm
     // offset is in seconds, and may not be
     // an integer number of hours
-    // Observation: for odd-number days, it seems that GMT 0 and GMT -ve countries's date objects are OK
-    // however, GMT +ve countries's date objects need to minus 1 day's worth of milliseconds
-    // whereas for even-number days, GMT -ve countries need to minus 1 day worth of ms
-    // while for GMT +ve and 0 countries no change to it needed
 
     const offsetMilliseconds = offset * 1000;
-    const milliseconds = date.getTime();
-    const d = new Date(milliseconds);
-    if (d.getUTCDate() % 2 === 0) {
-      let localDate =
-        offsetMilliseconds < 0
-          ? new Date(date.getTime() + offsetMilliseconds - 86400000)
-          : new Date(date.getTime() + offsetMilliseconds);
+    const localDate = new Date(date + offsetMilliseconds);
 
-      const hours24 = localDate.getUTCHours();
-      const minutes = localDate.getUTCMinutes();
-      const minutesPadded = minutes <= 9 ? `0${minutes}` : minutes;
-      const hours12 = hours24 % 12;
-      const ampm = hours24 < 12 ? "AM" : "PM";
-
-      const timeString = `${hours12}:${minutesPadded} ${ampm}`;
-
-      if (showDate) {
-        const day = localDate.getUTCDay();
-        const dateNumber = localDate.getUTCDate();
-        const month = localDate.getUTCMonth();
-        const year = localDate.getUTCFullYear();
-        const dateString = localDate.toLocaleDateString();
-        return `${dateString} ${timeString}`;
-      }
-
-      return timeString;
-    } else {
-      let localDate =
-        offsetMilliseconds <= 0
-          ? new Date(date.getTime() + offsetMilliseconds)
-          : new Date(date.getTime() + offsetMilliseconds - 86400000);
-
-      const hours24 = localDate.getUTCHours();
-      const minutes = localDate.getUTCMinutes();
-      const minutesPadded = minutes <= 9 ? `0${minutes}` : minutes;
-      const hours12 = hours24 % 12;
-      const ampm = hours24 < 12 ? "AM" : "PM";
-
-      const timeString = `${hours12}:${minutesPadded} ${ampm}`;
-
-      if (showDate) {
-        const day = localDate.getUTCDay();
-        const dateNumber = localDate.getUTCDate();
-        const month = localDate.getUTCMonth();
-        const year = localDate.getUTCFullYear();
-        const dateString = localDate.toLocaleDateString();
-        return `${dateString} ${timeString}`;
-      }
-
-      return timeString;
+    let options = {
+      timeZone: "UTC",
+      hour: "numeric",
+      minute: "2-digit",
+      hourCycle: "h12",
+    };
+    if (showDate) {
+      options = {
+        ...options,
+        weekday: "short",
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+      };
     }
+
+    const timeString = localDate.toLocaleString("en-GB", options);
+    return timeString;
   };
 
   const getInitialDataUsingGeolocation = (position) => {
@@ -181,7 +148,7 @@ function App() {
         `${process.env.PUBLIC_URL}/assets/owm_weather_codes/${iconCode}@2x.png`
       );
       setWeatherDescription(weatherData.weather[0].description);
-      setCityLocalTime(timeConverter(new Date(), weatherData.timezone, true));
+      setCityLocalTime(timeConverter(Date.now(), weatherData.timezone, true));
       // setIsLoading(false);
     } catch (err) {
       console.log(err);
@@ -210,11 +177,8 @@ function App() {
     return convertedTemp.toFixed(1);
   };
 
-  const currentDate = new Date();
-  const currentDate_string = currentDate.toUTCString();
-
-  const sunRise = new Date(weatherData.sys.sunrise * 1000);
-  const sunSet = new Date(weatherData.sys.sunset * 1000);
+  const sunRise = weatherData.sys.sunrise * 1000;
+  const sunSet = weatherData.sys.sunset * 1000;
 
   const getPrecipitationChance = (forecastData) => {
     try {
