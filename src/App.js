@@ -5,7 +5,6 @@ import Footer from "./components/Footer";
 import WeatherInfo from "./components/WeatherInfo";
 import Switch from "@material-ui/core/Switch";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
-import { __SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED } from "react-dom";
 
 function App() {
   // constants
@@ -14,7 +13,6 @@ function App() {
   const endpointForecast = "forecast";
 
   // state and state-dependent declarations
-  const initialRender = useRef(true);
   const [isValidCity, setIsValidCity] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [units, setUnits] = useState("C");
@@ -32,16 +30,8 @@ function App() {
   const [cityLocalTime, setCityLocalTime] = useState("");
   const [city, setCity] = useState("London");
   const [queryCity, setQueryCity] = useState("London");
-  const [queryUrl, setQueryUrl] = useState(
-    `${baseUrl}${endpoint}?q=${city}&appid=${process.env.REACT_APP_OWM_API_KEY}`
-  );
-  const [forecastUrl, setForecastUrl] = useState(
-    `${baseUrl}${endpointForecast}?q=${city}&appid=${process.env.REACT_APP_OWM_API_KEY}`
-  );
-
-  if (initialRender.current) {
-    console.log("initial render");
-  }
+  const [queryUrl, setQueryUrl] = useState("");
+  const [forecastUrl, setForecastUrl] = useState("");
 
   const [mainTemp, setMainTemp] = useState("");
   const [feelsLike, setFeelsLike] = useState("");
@@ -67,7 +57,7 @@ function App() {
   // }, [messageFlash]);
 
   useEffect(() => {
-    if (initialRender.current === false) {
+    if (queryUrl !== "" && forecastUrl !== "") {
       console.log("query fired due to change in queryUrl or forecastUrl");
       const fetchQuery = fetch(queryUrl)
         .then((response) => response.json())
@@ -110,20 +100,22 @@ function App() {
         setWeatherDescription(weatherData.weather[0].description);
         setCityLocalTime(timeConverter(Date.now(), weatherData.timezone, true));
         setMainTemp(tempConverter(weatherData.main.temp));
-        setFeelsLike(`${tempConverter(
-          weatherData.main.feels_like
-        )} º${units}`);
+        setFeelsLike(`${tempConverter(weatherData.main.feels_like)} º${units}`);
         setPrecipitationChance(getPrecipitationChance(forecastData));
         setHumidity(`${weatherData.main.humidity}%`);
         setWindSpeed(`${weatherData.wind.speed.toFixed(1)} m/s`);
-        setSunrise(timeConverter(weatherData.sys.sunrise * 1000, weatherData.timezone));
-        setSunset(timeConverter(weatherData.sys.sunset * 1000, weatherData.timezone));
-     
+        setSunrise(
+          timeConverter(weatherData.sys.sunrise * 1000, weatherData.timezone)
+        );
+        setSunset(
+          timeConverter(weatherData.sys.sunset * 1000, weatherData.timezone)
+        );
+
         // setIsLoading(false);
       } catch (err) {
         console.log(err);
       }
-    } 
+    }
   }, [weatherData, isForecast, units, forecastData]);
 
   useEffect(() => {
@@ -135,12 +127,16 @@ function App() {
           `${process.env.PUBLIC_URL}/assets/owm_weather_codes/${iconCode}@2x.png`
         );
         setWeatherDescription(forecastData.list[7].weather[0].description);
-        setCityLocalTime(timeConverter(Date.now() + 86400000, forecastData.city.timezone, true));
+        setCityLocalTime(
+          timeConverter(Date.now() + 86400000, forecastData.city.timezone, true)
+        );
         setMainTemp(tempConverter(forecastData.list[7].main.temp));
-        setFeelsLike(`${tempConverter(
-          forecastData.list[7].main.feels_like
-        )} º${units}`);
-        setPrecipitationChance(getPrecipitationChance(forecastData, {forecast24:true}));
+        setFeelsLike(
+          `${tempConverter(forecastData.list[7].main.feels_like)} º${units}`
+        );
+        setPrecipitationChance(
+          getPrecipitationChance(forecastData, { forecast24: true })
+        );
         setHumidity(`${forecastData.list[7].main.humidity}%`);
         setWindSpeed(`${forecastData.list[7].wind.speed.toFixed(1)} m/s`);
         setSunrise(null);
@@ -160,10 +156,10 @@ function App() {
     // Wed, 10 Feb 2021, 12:00 pm
     // offset is in seconds, and may not be
     // an integer number of hours
-   
+
     const offsetMilliseconds = offset * 1000;
     const localDate = new Date(date + offsetMilliseconds);
-    
+
     let options = {
       timeZone: "UTC",
       hour: "numeric",
@@ -179,7 +175,7 @@ function App() {
         day: "numeric",
       };
     }
-   
+
     const timeString = localDate.toLocaleString("en-GB", options);
     return timeString;
   };
@@ -207,7 +203,6 @@ function App() {
     setForecastUrl(
       `${baseUrl}${endpointForecast}?lat=${lat}&lon=${long}&appid=${process.env.REACT_APP_OWM_API_KEY}`
     );
-    initialRender.current = false;
   };
 
   const getInitialDataUsingDefaultCity = () => {
@@ -218,11 +213,10 @@ function App() {
     setForecastUrl(
       `${baseUrl}${endpointForecast}?q=${city}&appid=${process.env.REACT_APP_OWM_API_KEY}`
     );
-    initialRender.current = false;
   };
 
-  const getPrecipitationChance = (forecastData, options={}) => {
-    const forecastEntry = options.forecast24 ? 7 : 0; 
+  const getPrecipitationChance = (forecastData, options = {}) => {
+    const forecastEntry = options.forecast24 ? 7 : 0;
     try {
       if (forecastData.list[0].pop) {
         return `${Math.round(forecastData.list[forecastEntry].pop * 100)}%`;
@@ -248,8 +242,8 @@ function App() {
   };
 
   const changeForecast = () => {
-    setIsForecast(!isForecast)
-  }
+    setIsForecast(!isForecast);
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -282,7 +276,7 @@ function App() {
             aria-label="go-button"
           />
           <div className="temp-button-container">
-          <FormControlLabel
+            <FormControlLabel
               control={
                 <Switch
                   checked={isForecast}
@@ -291,7 +285,7 @@ function App() {
                 />
               }
               label="24h forecast"
-              />
+            />
             <FormControlLabel
               control={
                 <Switch
