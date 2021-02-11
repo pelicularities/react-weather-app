@@ -135,7 +135,16 @@ function App() {
           `${process.env.PUBLIC_URL}/assets/owm_weather_codes/${iconCode}@2x.png`
         );
         setWeatherDescription(forecastData.list[7].weather[0].description);
-        setCityLocalTime(timeConverter(Date.now(), forecastData.timezone, true));
+        setCityLocalTime(timeConverter(Date.now() + 86400000, forecastData.city.timezone, true));
+        setMainTemp(tempConverter(forecastData.list[7].main.temp));
+        setFeelsLike(`${tempConverter(
+          forecastData.list[7].main.feels_like
+        )} º${units}`);
+        setPrecipitationChance(getPrecipitationChance(forecastData, {forecast24:true}));
+        setHumidity(`${forecastData.list[7].main.humidity}%`);
+        setWindSpeed(`${forecastData.list[7].wind.speed.toFixed(1)} m/s`);
+        setSunrise(null);
+        setSunset(null);
         // setIsLoading(false);
       } catch (err) {
         console.log(err);
@@ -151,10 +160,10 @@ function App() {
     // Wed, 10 Feb 2021, 12:00 pm
     // offset is in seconds, and may not be
     // an integer number of hours
-
+   
     const offsetMilliseconds = offset * 1000;
     const localDate = new Date(date + offsetMilliseconds);
-
+    
     let options = {
       timeZone: "UTC",
       hour: "numeric",
@@ -170,7 +179,7 @@ function App() {
         day: "numeric",
       };
     }
-
+   
     const timeString = localDate.toLocaleString("en-GB", options);
     return timeString;
   };
@@ -212,10 +221,11 @@ function App() {
     initialRender.current = false;
   };
 
-  const getPrecipitationChance = (forecastData) => {
+  const getPrecipitationChance = (forecastData, options={}) => {
+    const forecastEntry = options.forecast24 ? 7 : 0; 
     try {
       if (forecastData.list[0].pop) {
-        return `${Math.round(forecastData.list[0].pop * 100)}%`;
+        return `${Math.round(forecastData.list[forecastEntry].pop * 100)}%`;
       } else {
         // no percentage of precipitation returned by API
         // i.e. no chance of precipitation in next 3 hours
